@@ -1,0 +1,1 @@
+VS Code grammar for [TSN.1](http://www.protomatics.com/tsn1.html) language.

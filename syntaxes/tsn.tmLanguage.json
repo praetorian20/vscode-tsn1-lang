@@ -1,20 +1,90 @@
 {
 	"$schema": "https://raw.githubusercontent.com/martinring/tmlanguage/master/tmlanguage.json",
 	"name": "TSN1",
+	"scopeName": "source.tsn",
+	"fileTypes": ["tsn"],
 	"patterns": [
 		{
 			"include": "#keywords"
 		},
 		{
 			"include": "#strings"
+		},
+		{
+			"include": "#comments"
 		}
 	],
 	"repository": {
 		"keywords": {
-			"patterns": [{
-				"name": "keyword.control.tsn",
-				"match": "\\b(if|while|for|return)\\b"
-			}]
+			"patterns": [
+				{
+					"name": "keyword.control.tsn",
+					"match": "\\b(if|else|while)\\b"
+				},
+				{
+					"name": "keyword.other.tsn",
+					"match": "\\b(import|package)\\b"
+				}
+			]
+		},
+		"comments": {
+			"patterns": [
+				{
+					"include": "#comments-doc"
+				},
+				{
+					"include": "#comments-block"
+				},
+				{
+					"include": "#comments-inline"
+				}
+			]
+		},
+		"comments-inline": {
+			"patterns": [
+				{
+					"include": "#comments-block"
+				},
+				{
+					"captures": {
+						"1": {
+							"name": "comment.line.double-slash.tsn"
+						}
+					},
+					"match": "((//).*)$"
+				}
+			]
+		},
+		"comments-block": {
+			"patterns": [
+				{
+					"begin": "/\\*",
+					"end": "\\*/",
+					"name": "comment.block.tsn",
+					"patterns": [
+						{
+							"include": "#comments-block"
+						}
+					]
+				}
+			]
+		},
+		"comments-doc": {
+			"patterns": [
+				{
+					"begin": "/\\*!",
+					"end": "\\*/",
+					"name": "comment.block.documentation.tsn",
+					"patterns": [
+						{
+							"include": "#comments-doc"
+						},
+						{
+							"include": "#comments-block"
+						}
+					]
+				}
+			]
 		},
 		"strings": {
 			"name": "string.quoted.double.tsn",
@@ -27,6 +97,5 @@
 				}
 			]
 		}
-	},
-	"scopeName": "source.tsn"
+	}
 }

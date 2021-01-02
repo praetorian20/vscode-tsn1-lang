@@ -19,11 +19,23 @@
 			"patterns": [
 				{
 					"name": "keyword.control.tsn",
-					"match": "\\b(if|else|while)\\b"
+					"match": "\\b(if|else|while|case|of|until)\\b"
 				},
 				{
 					"name": "keyword.other.tsn",
-					"match": "\\b(import|package)\\b"
+					"match": "\\b(import|package|macro|align|reserve|expand|enumerated|var|optional)\\b"
+				},
+				{
+					"name": "keyword.other.tsn",
+					"match": "\\b(sizeof|ceil|floor|log2|count1s)\\b"
+				}
+			]
+		},
+		"constants": {
+			"patterns": [
+				{
+					"name": "constant.language.tsn",
+					"match": "\\b(true|false|boolean|signed|integer)\\b"
 				}
 			]
 		},

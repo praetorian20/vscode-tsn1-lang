@@ -8,6 +8,9 @@
 			"include": "#keywords"
 		},
 		{
+			"include": "#constants"
+		},
+		{
 			"include": "#strings"
 		},
 		{
@@ -27,7 +30,7 @@
 				},
 				{
 					"name": "keyword.other.tsn",
-					"match": "\\b(sizeof|ceil|floor|log2|count1s)\\b"
+					"match": "\\b(boolean|signed|integer|sizeof|ceil|floor|log2|count1s)\\b"
 				}
 			]
 		},
@@ -35,7 +38,7 @@
 			"patterns": [
 				{
 					"name": "constant.language.tsn",
-					"match": "\\b(true|false|boolean|signed|integer)\\b"
+					"match": "\\b(true|false)\\b"
 				}
 			]
 		},

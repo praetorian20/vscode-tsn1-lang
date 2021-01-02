@@ -10,16 +10,25 @@
         "Programming Languages"
     ],
     "contributes": {
-        "languages": [{
-            "id": "tsn",
-            "aliases": ["TSN1", "tsn"],
-            "extensions": [".tsn"],
-            "configuration": "./language-configuration.json"
-        }],
-        "grammars": [{
-            "language": "tsn",
-            "scopeName": "source.tsn",
-            "path": "./syntaxes/tsn.tmLanguage.json"
-        }]
+        "languages": [
+            {
+                "id": "tsn",
+                "aliases": [
+                    "TSN1",
+                    "tsn"
+                ],
+                "extensions": [
+                    ".tsn"
+                ],
+                "configuration": "./language-configuration.json"
+            }
+        ],
+        "grammars": [
+            {
+                "language": "tsn",
+                "scopeName": "source.tsn",
+                "path": "./syntaxes/tsn.tmLanguage.json"
+            }
+        ]
     }
 }

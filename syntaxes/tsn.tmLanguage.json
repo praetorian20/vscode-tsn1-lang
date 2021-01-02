@@ -13,6 +13,9 @@
 			"include": "#constants"
 		},
 		{
+			"include": "#operators"
+		},
+		{
 			"include": "#numbers"
 		},
 		{
@@ -367,6 +370,38 @@
 				{
 					"name": "constant.character.escape.tsn",
 					"match": "\\\\."
+				}
+			]
+		},
+		"operators": {
+			"patterns": [
+				{
+					"match": "<<|>>",
+					"name": "keyword.operator.bitwise.shift.tsn"
+				},
+				{
+					"match": "!=|<=|>=|==|<|>",
+					"name": "keyword.operator.comparison.tsn"
+				},
+				{
+					"match": "&&|!|\\|\\|",
+					"name": "keyword.operator.logical.tsn"
+				},
+				{
+					"match": "&|\\||\\^|~",
+					"name": "keyword.operator.bitwise.tsn"
+				},
+				{
+					"match": "::=",
+					"name": "keyword.operator.declaration.tsn"
+				},
+				{
+					"match": "=",
+					"name": "keyword.operator.assignment.tsn"
+				},
+				{
+					"match": "%|\\*|/|-|\\+",
+					"name": "keyword.operator.arithmetic.tsn"
 				}
 			]
 		}

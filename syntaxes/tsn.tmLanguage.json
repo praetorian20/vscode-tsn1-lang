@@ -7,22 +7,25 @@
 	],
 	"patterns": [
 		{
-			"include": "#keywords"
-		},
-		{
-			"include": "#constants"
-		},
-		{
-			"include": "#operators"
-		},
-		{
-			"include": "#numbers"
+			"include": "#comments"
 		},
 		{
 			"include": "#strings"
 		},
 		{
-			"include": "#comments"
+			"include": "#keywords"
+		},
+		{
+			"include": "#storage_types"
+		},
+		{
+			"include": "#operators"
+		},
+		{
+			"include": "#constants"
+		},
+		{
+			"include": "#numbers"
 		}
 	],
 	"repository": {
@@ -38,7 +41,15 @@
 				},
 				{
 					"name": "keyword.other.tsn",
-					"match": "\\b(boolean|signed|integer|sizeof|ceil|floor|log2|count1s)\\b"
+					"match": "\\b(sizeof|ceil|floor|log2|count1s)\\b"
+				}
+			]
+		},
+		"storage_types": {
+			"patterns": [
+				{
+					"match": "\\b(boolean|signed|integer|float|string)\\b",
+					"name": "storage.type.built-in.primitive.tsn"
 				}
 			]
 		},

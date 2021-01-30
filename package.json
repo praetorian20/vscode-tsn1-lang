@@ -4,6 +4,7 @@
     "description": "TSN.1 grammar",
     "publisher": "praetorian20",
     "repository": "https://github.com/praetorian20/vscode-tsn1-lang",
+    "license": "CC0 1.0 Universal",
     "version": "0.0.1",
     "engines": {
         "vscode": "^1.52.0"
@@ -37,6 +38,9 @@
                 "path": "./syntaxes/tsn.tmLanguage.json"
             }
         ]
+    },
+    "dependencies": {
+        "tspeg": "^3.0.1"
     },
     "scripts": {
         "vscode:prepublish": "npm run compile",

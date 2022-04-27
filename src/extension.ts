@@ -11,6 +11,7 @@ class TsnDocumentSymbolProvider implements vscode.DocumentSymbolProvider {
    public provideDocumentSymbols(document: vscode.TextDocument,
       token: vscode.CancellationToken): Thenable<vscode.SymbolInformation[]> {
       return new Promise((resolve, reject) => {
+         // The result containing symbols in the document
          var symbols = [];
 
          for (var i = 0; i < document.lineCount; i++) {
@@ -33,6 +34,28 @@ class TsnDocumentSymbolProvider implements vscode.DocumentSymbolProvider {
                symbols.push({
                   name: match[1],
                   kind: vscode.SymbolKind.Enum,
+                  location: new vscode.Location(document.uri, line.range)
+               });
+               continue;
+            }
+
+            const macro_re = /\b([A-Za-z_][A-Za-z_0-9]*)\b\s*\(\)\s*::=\s*macro/;
+            match = line.text.match(macro_re);
+            if (match) {
+               symbols.push({
+                  name: match[1],
+                  kind: vscode.SymbolKind.Class,
+                  location: new vscode.Location(document.uri, line.range)
+               });
+               continue;
+            }
+
+            const msg_re = /\b([A-Za-z_][A-Za-z_0-9]*)\b\s*\(\)\s*::=\s*/;
+            match = line.text.match(msg_re);
+            if (match) {
+               symbols.push({
+                  name: match[1],
+                  kind: vscode.SymbolKind.Class,
                   location: new vscode.Location(document.uri, line.range)
                });
                continue;

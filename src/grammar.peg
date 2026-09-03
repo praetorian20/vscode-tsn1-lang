@@ -1,0 +1,207 @@
+// TSN.1 grammar based on section 8 of TSN1_Spec.pdf.
+// tsPEG is a PEG parser, so left-recursive list productions are expressed as
+// a head followed by zero or more tails. Terminal rules consume trailing
+// trivia; '@' captures source positions before and after declarations.
+
+start := trivia ast=compilation_unit $
+compilation_unit := package=package_decl_opt imports=import_decl* specifications=specification*
+package_decl_opt := package_decl | empty
+package_decl := start=@ package_kw name=package_id semi end=@
+import_decl := start=@ import_kw name=package_id_star semi end=@
+
+specification := group_specification | conditional | definition
+group_specification := start=@ lbrace specifications=specification* rbrace end=@
+conditional := start=@ if_kw lparen condition=expression rparen consequent=specification else_clause=else_clause? end=@
+else_clause := else_kw alternate=specification
+
+definition := enum_definition | macro_definition | case_macro_definition
+            | message_definition | constant_definition | empty_definition
+enum_definition := start=@ name=identifier define_kw enumerated_kw body=enum_body end=@
+                 | start=@ name=identifier define_kw enumerated_kw reference=qualified_id semi end=@
+enum_body := lbrace first=enum_literal rest={comma enum_literal}* comma? rbrace
+enum_literal := start=@ name=identifier value={lparen expression rparen}? end=@
+
+macro_definition := start=@ name=identifier parameters=macro_arguments_opt define_kw macro_kw body=declaration_block end=@
+case_macro_definition := start=@ name=identifier parameters=macro_arguments_opt define_kw case_kw of_kw macro_kw branches=case_of_branches end=@
+message_definition := start=@ name=identifier parameters=argument_decls_opt define_kw body=declaration_block end=@
+                    | start=@ name=identifier parameters=argument_decls_opt define_kw target=qualified_id arguments=call_arguments_opt semi end=@
+constant_definition := start=@ name=identifier define_kw value={expression | string_literal} semi end=@
+empty_definition := start=@ semi end=@
+
+macro_arguments_opt := lparen arguments=macro_arguments? rparen | empty
+macro_arguments := first=identifier rest={comma identifier}*
+argument_decls_opt := lparen arguments=argument_decls? rparen | empty
+argument_decls := first=argument_decl rest={comma argument_decl}*
+argument_decl := start=@ var_kw name=identifier size=expression signed=signed_opt ranges=range_list_opt end=@
+                | start=@ name=identifier size=expression signed=signed_opt ranges=range_list_opt end=@
+                | start=@ name=identifier colon type=qualified_id end=@
+call_arguments_opt := lparen expression_list_opt rparen
+
+variable_decls := variables=variable_decl*
+variable_decl := start=@ var_kw name=identifier size=expression signed=signed_opt default_value=default_value_opt semi end=@
+
+declarations := declarations=declaration*
+declaration := declaration_block | macro_expansion_decl | optional_decl
+             | conditional_decl | while_loop_decl | assignment_decl | field_decl | empty_declaration
+declaration_block := start=@ lbrace declarations=declaration* rbrace end=@
+macro_expansion_decl := start=@ expand_kw target=qualified_id call_arguments_opt? end=@
+optional_decl := start=@ optional_kw name=identifier colon body=declaration end=@
+conditional_decl := start=@ if_kw lparen condition=expression rparen consequent=declaration else_clause=else_declaration_clause? end=@
+else_declaration_clause := else_kw alternate=declaration
+while_loop_decl := start=@ while_kw lparen condition=expression rparen body=declaration end=@
+assignment_decl := start=@ name=identifier assign value=expression comma end=@
+
+field_decl := field_value_decl | field_enum_reference_decl | field_enum_inline_decl
+            | field_boolean_decl | field_float_decl | field_string_decl
+            | field_message_reference_decl | field_inline_message_decl
+            | field_case_decl | reserve_decl | align_decl
+field_value_decl := start=@ name=identifier array=array_opt size=expression signed=signed_opt
+                    ranges=range_list_opt default_value=default_value_opt semi end=@
+field_enum_reference_decl := start=@ name=identifier array=array_opt size=expression signed=signed_opt
+                             enumerated_kw type=qualified_id ranges=range_list_opt default_value=default_value_opt semi end=@
+field_enum_inline_decl := start=@ name=identifier array=array_opt size=expression signed=signed_opt
+                          enumerated_kw type=identifier? body=enum_body ranges=range_list_opt default_value=default_value_opt semi end=@
+field_boolean_decl := start=@ name=identifier array=array_opt size=expression boolean_kw default_value=default_value_opt semi end=@
+field_float_decl := start=@ name=identifier array=array_opt size=expression float_kw ranges=range_list_opt default_value=default_value_opt semi end=@
+field_string_decl := start=@ name=identifier array=array_opt size=expression string_kw null_char=null_char_opt max_num_char=max_num_char_opt
+                     default_value=default_value_opt semi end=@
+field_message_reference_decl := start=@ name=identifier array=array_opt size=expression_opt colon type=qualified_id
+                                 arguments=call_arguments_opt? default_value=default_value_opt semi end=@
+field_inline_message_decl := start=@ name=identifier array=array_opt size=expression_opt colon type=identifier?
+                             lbrace variables=variable_decls declarations=declaration* rbrace
+                             default_value=default_value_opt end=@
+field_case_decl := start=@ name=identifier size=expression_opt colon case_kw selector=expression of_kw
+                   lbrace branches=case_of_branches rbrace end=@
+reserve_decl := start=@ reserve_kw size=expression colon body=declaration_block end=@
+             | start=@ reserve_kw size=expression semi end=@
+align_decl := start=@ expression=align_expression semi end=@
+
+null_char_opt := lparen value=expression rparen | empty
+max_num_char_opt := lbracket value=expression rbracket | empty
+case_of_branches := branches=case_of_branch*
+case_of_branch := start=@ labels=case_labels arrow field=field_decl end=@
+                 | start=@ underscore arrow field=field_decl end=@
+case_labels := first=case_label rest={comma case_label}*
+case_label := start=@ first=expression range_op last=expression end=@
+            | start=@ value=expression end=@
+
+array_opt := lbracket interval=interval rbracket until=until_opt
+           | lbracket size=expression rbracket until=until_opt
+           | lbracket rbracket until=until_opt
+           | empty
+interval := start=expression range_op end=expression
+until_opt := until_kw lparen value=integer_literal rparen | empty
+signed_opt := signed_kw | empty
+default_value_opt := assign value=expression | empty
+expression_opt := expression | empty
+range_list_opt := lparen ranges=range_list rparen | empty
+range_list := first=range rest={comma range}*
+range := start=@ first=expression range_op last=expression end=@
+       | start=@ value=expression end=@
+expression_list_opt := expressions=expression_list? | empty
+expression_list := first=expression rest={comma expression}*
+
+// Expression precedence is explicit because the BNF expression production is
+// compact and left-recursive.
+expression := logical_or
+logical_or := left=logical_and right={or_op logical_and}*
+logical_and := left=bitwise_or right={and_op bitwise_or}*
+bitwise_or := left=bitwise_xor right={bit_or bitwise_xor}*
+bitwise_xor := left=bitwise_and right={xor bitwise_and}*
+bitwise_and := left=equality right={bit_and equality}*
+equality := left=relational right={{equal_equal | not_equal} relational}*
+relational := left=shift right={{greater_equal | less_equal | greater | less} shift}*
+shift := left=additive right={{shift_left | shift_right} additive}*
+additive := left=multiplicative right={{plus | minus} multiplicative}*
+multiplicative := left=unary right={{star | slash | percent} unary}*
+unary := operator={plus | minus | bang | tilde} value=unary
+        | count1s_kw value=unary
+        | postfix
+postfix := base=primary suffix={member_suffix | index_suffix}*
+member_suffix := dot name=identifier
+index_suffix := lbracket index=expression rbracket
+primary := boolean_literal | float_literal | integer_literal | string_literal
+         | align_expression | builtin_call | identifier | lparen expression rparen
+         | lbrace expression_list_opt rbrace
+builtin_call := name={sizeof_kw | ceil_kw | floor_kw | log2_kw} lparen argument=expression rparen
+align_expression := align_kw lparen value=expression comma alignment=expression rparen
+                  | align_kw lparen value=expression rparen
+
+qualified_id := package_id
+package_id_star := package=package_id dot wildcard
+                 | package=package_id
+package_id := first=identifier rest={dot part=identifier}*
+
+identifier := value='[_a-zA-Z][_a-zA-Z0-9]*' trivia
+boolean_literal := value={'true\b' | 'false\b'} trivia
+integer_literal := value='(?:0[xX][0-9a-fA-F](?:[\'][0-9a-fA-F]+)*|0[bB][01](?:[\'][01]+)*|0[0-7]*(?:[\'][0-7]+)*|[1-9][0-9]*(?:[\'][0-9]+)*)' trivia
+float_literal := value='(?:[0-9](?:[0-9\'][0-9]*)?\.[0-9](?:[0-9\'][0-9]*)?(?:[eE][+-]?[0-9]+)?[fFlL]?|[0-9](?:[0-9\'][0-9]*)?[eE][+-]?[0-9]+[fFlL]?)' trivia
+string_literal := value='(?:\"(?:\\.|[^\"\\])*\"|\'(?:\\.|[^\'\\])*\')' trivia
+
+// Keyword and punctuation tokens. Keeping trivia in one place makes comments
+// valid anywhere whitespace is valid and lets the parser retain source spans.
+package_kw := 'package\b' trivia
+import_kw := 'import\b' trivia
+if_kw := 'if\b' trivia
+else_kw := 'else\b' trivia
+enumerated_kw := 'enumerated\b' trivia
+macro_kw := 'macro\b' trivia
+case_kw := 'case\b' trivia
+of_kw := 'of\b' trivia
+var_kw := 'var\b' trivia
+expand_kw := 'expand\b' trivia
+optional_kw := 'optional\b' trivia
+while_kw := 'while\b' trivia
+boolean_kw := 'boolean\b' trivia
+float_kw := 'float\b' trivia
+string_kw := 'string\b' trivia
+reserve_kw := 'reserve\b' trivia
+align_kw := 'align\b' trivia
+until_kw := 'until\b' trivia
+signed_kw := 'signed\b' trivia
+count1s_kw := 'count1s\b' trivia
+sizeof_kw := 'sizeof\b' trivia
+ceil_kw := 'ceil\b' trivia
+floor_kw := 'floor\b' trivia
+log2_kw := 'log2\b' trivia
+
+semi := ';' trivia
+comma := ',' trivia
+colon := ':' trivia
+lbrace := '\{' trivia
+rbrace := '\}' trivia
+lparen := '\(' trivia
+rparen := '\)' trivia
+lbracket := '\[' trivia
+rbracket := '\]' trivia
+dot := '\.' trivia
+wildcard := '\*' trivia
+define_kw := '::=' trivia
+arrow := '=>' trivia
+range_op := '\.\.' trivia
+underscore := '_' trivia
+assign := '=' trivia
+plus := '\+' trivia
+minus := '-' trivia
+star := '\*' trivia
+slash := '/' trivia
+percent := '%' trivia
+or_op := '\|\|' trivia
+and_op := '&&' trivia
+bit_or := '\|' trivia
+xor := '\^' trivia
+bit_and := '&' trivia
+equal_equal := '==' trivia
+not_equal := '!=' trivia
+greater_equal := '>=' trivia
+less_equal := '<=' trivia
+greater := '>' trivia
+less := '<' trivia
+shift_left := '<<' trivia
+shift_right := '>>' trivia
+bang := '!' trivia
+tilde := '~' trivia
+
+empty := ''
+empty_declaration := semi
+trivia := '(?:(?:[\s]+)|(?://[^\r\n]*|/\*[\s\S]*?\*\/|#[^\r\n]*))*'

@@ -1,3 +1,8 @@
 {
-   "typescript.tsdk": "./node_modules/typescript/lib"
+    "files.exclude": {
+        "**/out": true
+    },
+    "search.exclude": {
+        "**/out": true
+    }
 }

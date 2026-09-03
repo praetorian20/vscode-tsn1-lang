@@ -7,6 +7,7 @@
 .github/
 .gitignore
 .gitmodules
+.npmrc
 .vscode-test/**
 .vscode/**
 CONTRIBUTING.md
@@ -18,5 +19,8 @@ out/test/**
 out/tool/**
 package-lock.json
 src/**
+TSN1_Spec.pdf
+.env
+.env.*
 tsconfig.*.json
 tsconfig.json

@@ -1,4 +1,25 @@
-*.code-workspace
+/.agents/
+/.codex/
+/*.code-workspace
 /*.vsix
 /node_modules/
 /out/
+/src/parser.ts
+/TSN1_Spec.pdf
+
+# Generated and local tooling files.
+*.tsbuildinfo
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.env
+.env.*
+!.env.example
+
+# Local package-manager configuration can contain credentials.
+.npmrc
+
+# Operating-system files.
+.DS_Store
+Thumbs.db

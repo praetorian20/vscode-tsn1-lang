@@ -33,15 +33,8 @@ export function activate(context: vscode.ExtensionContext) {
 }
 
 class TsnDocumentSymbolProvider implements vscode.DocumentSymbolProvider {
-   public provideDocumentSymbols(document: vscode.TextDocument, _token: vscode.CancellationToken): Thenable<vscode.SymbolInformation[]> {
-      return Promise.resolve(buildSymbols(document).map(symbol =>
-         new vscode.SymbolInformation(
-            symbol.name,
-            symbol.kind,
-            symbol.range,
-            document.uri
-         )
-      ));
+   public provideDocumentSymbols(document: vscode.TextDocument, _token: vscode.CancellationToken): Thenable<vscode.DocumentSymbol[]> {
+      return Promise.resolve(buildDocumentSymbols(document));
    }
 }
 
@@ -89,8 +82,43 @@ function buildSymbols(document: vscode.TextDocument): TsnSymbol[] {
 
    const symbols: TsnSymbol[] = [];
    visitAst(result.ast as any, document, symbols);
-   symbols.sort((left, right) => left.range.start.compareTo(right.range.start));
+   symbols.sort((left, right) => {
+      const startOrder = left.range.start.compareTo(right.range.start);
+      return startOrder !== 0 ? startOrder : right.range.end.compareTo(left.range.end);
+   });
    return symbols;
+}
+
+function buildDocumentSymbols(document: vscode.TextDocument): vscode.DocumentSymbol[] {
+   const roots: vscode.DocumentSymbol[] = [];
+   const stack: Array<{ range: vscode.Range; symbol: vscode.DocumentSymbol }> = [];
+
+   buildSymbols(document).forEach(symbol => {
+      while (stack.length && !containsRange(stack[stack.length - 1].range, symbol.range)) {
+         stack.pop();
+      }
+
+      const documentSymbol = new vscode.DocumentSymbol(
+         symbol.name,
+         '',
+         symbol.kind,
+         symbol.range,
+         symbol.range
+      );
+
+      if (stack.length) {
+         stack[stack.length - 1].symbol.children.push(documentSymbol);
+      } else {
+         roots.push(documentSymbol);
+      }
+      stack.push({ range: symbol.range, symbol: documentSymbol });
+   });
+
+   return roots;
+}
+
+function containsRange(outer: vscode.Range, inner: vscode.Range): boolean {
+   return outer.start.compareTo(inner.start) <= 0 && outer.end.compareTo(inner.end) >= 0;
 }
 
 function visitAst(value: any, document: vscode.TextDocument, symbols: TsnSymbol[]) {

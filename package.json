@@ -10,6 +10,9 @@
         "node": ">=10",
         "vscode": "^1.136.0"
     },
+    "extensionKind": [
+        "workspace"
+    ],
     "categories": [
         "Programming Languages"
     ],

@@ -16,6 +16,9 @@
 			"include": "#keywords"
 		},
 		{
+			"include": "#definition-names"
+		},
+		{
 			"include": "#storage_types"
 		},
 		{
@@ -48,8 +51,20 @@
 		"storage_types": {
 			"patterns": [
 				{
-					"match": "\\b(boolean|signed|integer|float|string)\\b",
+					"match": "\\b(boolean|signed|float|string)\\b",
 					"name": "storage.type.built-in.primitive.tsn"
+				}
+			]
+		},
+		"definition-names": {
+			"patterns": [
+				{
+					"name": "entity.name.function.tsn",
+					"match": "\\b[_a-zA-Z][_a-zA-Z0-9]*(?=\\s*\\([^\\n{}]*\\)\\s*::=)"
+				},
+				{
+					"name": "entity.name.type.tsn",
+					"match": "\\b[_a-zA-Z][_a-zA-Z0-9]*(?=\\s*::=)"
 				}
 			]
 		},
@@ -71,21 +86,25 @@
 				},
 				{
 					"include": "#comments-inline"
+				},
+				{
+					"include": "#comments-hash"
 				}
 			]
 		},
 		"comments-inline": {
 			"patterns": [
 				{
-					"include": "#comments-block"
-				},
+					"name": "comment.line.double-slash.tsn",
+					"match": "//.*$"
+				}
+			]
+		},
+		"comments-hash": {
+			"patterns": [
 				{
-					"captures": {
-						"1": {
-							"name": "comment.line.double-slash.tsn"
-						}
-					},
-					"match": "((//).*)$"
+					"name": "comment.line.number-sign.tsn",
+					"match": "#.*$"
 				}
 			]
 		},
@@ -105,6 +124,23 @@
 		},
 		"comments-doc": {
 			"patterns": [
+				{
+					"name": "comment.line.documentation.tsn",
+					"match": "//[/!].*$"
+				},
+				{
+					"begin": "/\\*\\*",
+					"end": "\\*/",
+					"name": "comment.block.documentation.tsn",
+					"patterns": [
+						{
+							"include": "#comments-doc"
+						},
+						{
+							"include": "#comments-block"
+						}
+					]
+				},
 				{
 					"begin": "/\\*!",
 					"end": "\\*/",
@@ -364,6 +400,10 @@
 									}
 								},
 								{
+									"match": "(\\G(?:0|[1-9][0-9]*(?:'[0-9]+)*))",
+									"name": "constant.numeric.decimal.tsn"
+								},
+								{
 									"match": "(?:(?:[0-9a-zA-Z_\\.]|')|(?<=[eEpP])[+-])+",
 									"name": "invalid.illegal.constant.numeric"
 								}
@@ -374,18 +414,41 @@
 			}
 		},
 		"strings": {
-			"name": "string.quoted.double.tsn",
-			"begin": "\"",
-			"end": "\"",
 			"patterns": [
 				{
-					"name": "constant.character.escape.tsn",
-					"match": "\\\\."
+					"name": "string.quoted.double.tsn",
+					"begin": "\"",
+					"end": "\"",
+					"patterns": [
+						{
+							"name": "constant.character.escape.tsn",
+							"match": "\\\\."
+						}
+					]
+				},
+				{
+					"name": "string.quoted.single.tsn",
+					"begin": "'",
+					"end": "'",
+					"patterns": [
+						{
+							"name": "constant.character.escape.tsn",
+							"match": "\\\\."
+						}
+					]
 				}
 			]
 		},
 		"operators": {
 			"patterns": [
+				{
+					"match": "=>",
+					"name": "keyword.operator.arrow.tsn"
+				},
+				{
+					"match": "\\.\\.",
+					"name": "keyword.operator.range.tsn"
+				},
 				{
 					"match": "<<|>>",
 					"name": "keyword.operator.bitwise.shift.tsn"

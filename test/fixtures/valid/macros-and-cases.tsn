@@ -1,0 +1,26 @@
+Timestamp ::= macro {
+    Seconds 32;
+    Fraction 16;
+}
+
+Header(Size) ::= macro {
+    Length Size;
+    expand Timestamp;
+}
+
+Protocol ::= case of macro {
+    1 => TcpField 16;
+    2, 3 => UdpField 16;
+    4 .. 7 => OtherField 32;
+    _ => ReservedField 8;
+}
+
+Message() ::= {
+    expand Header(8);
+    Payload 8 : case Version of {
+        1 => Legacy 8;
+        _ => Current 16;
+    }
+    align(8);
+    reserve 4;
+}

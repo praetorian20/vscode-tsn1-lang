@@ -1,0 +1,14 @@
+package protocols.network;
+import protocols.network.tcp.*;
+import protocols.network.udp.header;
+
+MAX_PACKET_SIZE ::= 1500;
+MAX_PAYLOAD ::= MAX_PACKET_SIZE - 20;
+PI ::= 3.141592653589793;
+PROTOCOL_NAME ::= "TSN.1";
+
+MessageType ::= enumerated {
+    CONNECT,
+    DISCONNECT (1),
+    DATA
+}

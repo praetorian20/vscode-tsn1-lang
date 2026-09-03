@@ -1,0 +1,26 @@
+Computed() ::=
+{
+    InputCount 8;
+    Input[InputCount] 8;
+    Counter = 0,
+    Total = 0,
+    while (Counter < InputCount)
+    {
+        if (Input[Counter] > 100)
+        {
+            Total = Total + Input[Counter],
+        }
+        Counter = Counter + 1,
+    }
+    if (Total != 0) {
+        Result 16 = Total;
+    } else {
+        Result 16 = 0;
+    }
+}
+
+if (VERSION >= 2) {
+    NewHeader() ::= { Version 8; }
+} else {
+    OldHeader() ::= { Version 4; }
+}

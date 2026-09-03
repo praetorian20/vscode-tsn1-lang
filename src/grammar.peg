@@ -22,7 +22,7 @@ enum_body := lbrace first=enum_literal rest={comma enum_literal}* comma? rbrace
 enum_literal := start=@ name=identifier value={lparen expression rparen}? end=@
 
 macro_definition := start=@ name=identifier parameters=macro_arguments_opt define_kw macro_kw body=declaration_block end=@
-case_macro_definition := start=@ name=identifier parameters=macro_arguments_opt define_kw case_kw of_kw macro_kw branches=case_of_branches end=@
+case_macro_definition := start=@ name=identifier parameters=macro_arguments_opt define_kw case_kw of_kw macro_kw lbrace branches=case_of_branches rbrace end=@
 message_definition := start=@ name=identifier parameters=argument_decls_opt define_kw body=declaration_block end=@
                     | start=@ name=identifier parameters=argument_decls_opt define_kw target=qualified_id arguments=call_arguments_opt semi end=@
 constant_definition := start=@ name=identifier define_kw value={expression | string_literal} semi end=@
@@ -195,7 +195,7 @@ equal_equal := '==' trivia
 not_equal := '!=' trivia
 greater_equal := '>=' trivia
 less_equal := '<=' trivia
-greater := '>' trivia
+greater := '>(?!=)' trivia
 less := '<' trivia
 shift_left := '<<' trivia
 shift_right := '>>' trivia

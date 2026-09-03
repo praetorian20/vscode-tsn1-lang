@@ -1,0 +1,14 @@
+# File-level compiler note
+package examples.comments;
+
+/// Documentation for the message.
+//! An alternative Doxygen line comment.
+/** A block documentation comment. */
+Message() ::= {
+    /** Documentation for Header. */
+    Header 8;
+    Payload 16; // A trailing line comment.
+    # Hash comments are accepted as TSN.1 trivia.
+    /*! Documentation for Checksum. */
+    Checksum 8;
+}

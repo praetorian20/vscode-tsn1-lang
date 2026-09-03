@@ -19,6 +19,7 @@ out/test/**
 out/tool/**
 package-lock.json
 src/**
+test/**
 TSN1_Spec.pdf
 .env
 .env.*

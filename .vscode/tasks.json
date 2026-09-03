@@ -48,6 +48,16 @@
                 "reveal": "always",
                 "panel": "shared"
             }
+        },
+        {
+            "label": "test",
+            "type": "npm",
+            "script": "test",
+            "problemMatcher": "$tsc",
+            "presentation": {
+                "reveal": "always",
+                "panel": "shared"
+            }
         }
     ]
 }

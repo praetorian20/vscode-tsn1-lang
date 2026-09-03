@@ -46,9 +46,11 @@
         "clean": "rimraf out src/parser.ts *.vsix",
         "gen": "tspeg src/grammar.peg src/parser.ts",
         "package": "vsce package",
+        "test": "npm run compile && node out/test/parser.test.js",
         "watch": "tsc -w -p ./"
     },
     "devDependencies": {
+        "@types/node": "10.17.60",
         "@types/vscode": "^1.136.0",
         "cheerio": "1.0.0-rc.12",
         "rimraf": "3.0.2",

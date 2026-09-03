@@ -1,0 +1,16 @@
+Header() ::=
+{
+    Version 4;
+    Length 16;
+    SignedValue 12 signed;
+    IsValid 1 boolean;
+    Ratio 32 float;
+    Name 8 string[32];
+    Kind 8 enumerated { ONE, TWO (2) };
+    ExternalKind 8 enumerated MessageType;
+    Values[Length] 8;
+    Priority 3 (0 .. 7) = 1;
+    Checksum 16 = sizeof(Length) + 4;
+    Offset 8 = align(Length, 8);
+    Bits 8 = (1 << 3) | 2;
+}

@@ -17,6 +17,10 @@ the parser provides the structural language features.
 Development requires Node.js 10 or newer. Run `npm install` followed by
 `npm run compile` to regenerate the parser and compile the extension.
 
+Run `npm test` to execute parser regression tests covering representative valid
+and invalid TSN.1 examples derived from the specification. The same test is
+available from VS Code through **Terminal → Run Task… → test**.
+
 The dependency versions are capped where necessary to keep the build
 compatible with Node.js 10. Newer toolchain releases require newer Node.js
 versions.

@@ -1,0 +1,24 @@
+Packet() ::=
+{
+    Count 4;
+    Items[Count] :
+    {
+        Id 8;
+        Payload 16;
+    }
+    Header : HeaderDefinition;
+    Data :
+    {
+        Length 8;
+        Value Length * 8;
+    } = { 1, 2, 3 };
+    Names[] until(0) :
+    {
+        Name 8 string;
+    }
+}
+
+HeaderDefinition() ::= {
+    Version 4;
+    Flags 4;
+}

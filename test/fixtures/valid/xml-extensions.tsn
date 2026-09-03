@@ -1,0 +1,14 @@
+<code file="source" language="py" def="Config">
+  def set_config(self, cfg):
+     self.cfg = cfg
+     self.numcfg = len(self.cfg)
+</code>
+
+package foo;
+<options>-little-endian</options>
+
+KVPair() ::=
+{
+    name 8 string [64] = ""; <display>ascii</display>
+    value 8 string [64] = ""; <display>ascii</display>
+}

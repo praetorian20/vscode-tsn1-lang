@@ -10,6 +10,9 @@
 			"include": "#comments"
 		},
 		{
+			"include": "#xml-extensions"
+		},
+		{
 			"include": "#strings"
 		},
 		{
@@ -153,6 +156,14 @@
 							"include": "#comments-block"
 						}
 					]
+				}
+			]
+		},
+		"xml-extensions": {
+			"patterns": [
+				{
+					"name": "meta.tag.tsn",
+					"match": "</?[A-Za-z_][A-Za-z0-9_.:-]*(?:\\s+[^<>]*)?/?>"
 				}
 			]
 		},

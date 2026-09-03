@@ -139,7 +139,8 @@ float_literal := value='(?:[0-9](?:[0-9\'][0-9]*)?\.[0-9](?:[0-9\'][0-9]*)?(?:[e
 string_literal := value='(?:\"(?:\\.|[^\"\\])*\"|\'(?:\\.|[^\'\\])*\')' trivia
 
 // Keyword and punctuation tokens. Keeping trivia in one place makes comments
-// valid anywhere whitespace is valid and lets the parser retain source spans.
+// and XML extensions valid anywhere whitespace is valid while preserving
+// source spans.
 package_kw := 'package\b' trivia
 import_kw := 'import\b' trivia
 if_kw := 'if\b' trivia
@@ -204,4 +205,4 @@ tilde := '~' trivia
 
 empty := ''
 empty_declaration := semi
-trivia := '(?:(?:[\s]+)|(?://[^\r\n]*|/\*[\s\S]*?\*\/|#[^\r\n]*))*'
+trivia := '(?:(?:[\s]+)|(?://[^\r\n]*|/\*[\s\S]*?\*\/|#[^\r\n]*|<([A-Za-z_][A-Za-z0-9_.:-]*)(?:\s+[^<>]*)?>(?:[^<>]|</?[A-Za-z_][A-Za-z0-9_.:-]*(?:\s+[^<>]*)?>)*?</\1\s*>|<[A-Za-z_][A-Za-z0-9_.:-]*(?:\s+[^<>]*)?/>))*'

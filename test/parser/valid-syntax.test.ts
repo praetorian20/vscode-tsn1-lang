@@ -21,5 +21,11 @@ export function runValidSyntaxTests(): number {
     expectValid('conditionals, loops, and assignments', 'valid/control-flow.tsn');
     expectValid('macros and case selections', 'valid/macros-and-cases.tsn');
     expectValid('line, block, and hash comments', 'valid/comments.tsn');
-    return 6;
+    const xmlExtensions = expectValid('file and message XML extensions', 'valid/xml-extensions.tsn');
+    const xmlMessage = xmlExtensions.specifications[0];
+    const fieldNames = xmlMessage.body.declarations.map((declaration: any) => declaration.name.value);
+    if (fieldNames.join(',') !== 'name,value') {
+        throw new Error(`expected XML fixture fields name,value, found ${fieldNames.join(',')}`);
+    }
+    return 7;
 }

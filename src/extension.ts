@@ -2,6 +2,7 @@
 
 import * as vscode from 'vscode';
 import * as Parser from './parser';
+import { findTsnSymbols } from './symbol-index';
 
 interface TsnSymbol {
    name: string;
@@ -75,18 +76,35 @@ function parserDiagnostics(document: vscode.TextDocument): vscode.Diagnostic[] {
 }
 
 function buildSymbols(document: vscode.TextDocument): TsnSymbol[] {
-   const result = Parser.parse(document.getText());
-   if (!result.ast || result.errs.length !== 0) {
-      return [];
+   const text = document.getText();
+   const result = Parser.parse(text);
+
+   // Symbol discovery must not depend on the whole file being valid.  In
+   // practice TSN files commonly contain vendor XML extensions and newer
+   // constructs which are not accepted by the published grammar.  Use the
+   // parser tree when possible, and fall back to the lossless lexical index
+   // otherwise so a single unsupported construct does not hide every symbol.
+   const symbols: TsnSymbol[] = [];
+   if (result.ast && result.errs.length === 0) {
+      visitAst(result.ast as any, document, symbols);
+   }
+   if (symbols.length === 0) {
+      symbols.push(...scanSymbols(text, document));
    }
 
-   const symbols: TsnSymbol[] = [];
-   visitAst(result.ast as any, document, symbols);
    symbols.sort((left, right) => {
       const startOrder = left.range.start.compareTo(right.range.start);
       return startOrder !== 0 ? startOrder : right.range.end.compareTo(left.range.end);
    });
    return symbols;
+}
+
+function scanSymbols(text: string, document: vscode.TextDocument): TsnSymbol[] {
+   return findTsnSymbols(text).map(symbol => ({
+      name: symbol.name,
+      kind: symbol.kind === 'definition' ? vscode.SymbolKind.Class : vscode.SymbolKind.Field,
+      range: new vscode.Range(document.positionAt(symbol.start), document.positionAt(symbol.end))
+   }));
 }
 
 function buildDocumentSymbols(document: vscode.TextDocument): vscode.DocumentSymbol[] {
